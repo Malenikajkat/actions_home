@@ -38,6 +38,7 @@ jobs:
       - name: Build with Maven
         run: mvn -B package --file pom.xml
 
+
       - name: Run tests
         run: mvn test
 
@@ -58,23 +59,21 @@ jobs:
 
       - name: Setup Railway CLI
         run: |
-          curl -fSL https://railway.app/install.sh | sh
+          curl -fSL https://railway.app/install.sh | VERSION=latest sh
           echo "$HOME/.railway/bin" >> $GITHUB_PATH
-
 
       - name: Deploy to Railway
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
         run: |
           echo "Checking Railway authentication..."
-          railway status --token "$RAILWAY_TOKEN"
-
+          railway status
 
           echo "Deploying to Railway..."
-          railway up --token "$RAILWAY_TOKEN"
+          railway up
 
           echo "Deployment status:"
-          railway status --token "$RAILWAY_TOKEN"
+          railway status
 
           echo "Application URL:"
-          railway domain list --token "$RAILWAY_TOKEN" | grep -o 'https://.*' || echo "URL not available"
+          railway domain list | grep -o 'https://.*' || echo "URL not available"
