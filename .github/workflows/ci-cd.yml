@@ -1,6 +1,5 @@
 name: Java CI/CD Pipeline with Railway Deployment
 
-
 on:
   push:
     branches: [main, master]
@@ -38,7 +37,6 @@ jobs:
       - name: Build with Maven
         run: mvn -B package --file pom.xml
 
-
       - name: Run tests
         run: mvn test
 
@@ -62,18 +60,20 @@ jobs:
           curl -fSL https://railway.app/install.sh | VERSION=latest sh
           echo "$HOME/.railway/bin" >> $GITHUB_PATH
 
+      - name: Prepare Auth Directory
+        run: mkdir -p $HOME/.railway
+
       - name: Deploy to Railway
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
         run: |
-          echo "Checking Railway authentication..."
-          railway status
+          # Передаем токен через переменную окружения в каждую команду
+          RAILWAY_TOKEN=${{ secrets.RAILWAY_TOKEN }} \
+            railway status \
+            && railway up \
+            && echo "Application URL:" \
+            && railway domain list | grep -o 'https://.*' || echo "URL not available"
 
-          echo "Deploying to Railway..."
-          railway up
-
-          echo "Deployment status:"
-          railway status
-
-          echo "Application URL:"
-          railway domain list | grep -o 'https://.*' || echo "URL not available"
+      - name: Verify Deployment
+        if: success()
+        run: |
+          echo "Deployment completed successfully!"
+          echo "Check your application at the URL above."
