@@ -1,0 +1,6 @@
+name: my-java-app
+environment: production
+build:
+  builder: paketobuildpack
+run:
+  command: java -jar target/*.jar
