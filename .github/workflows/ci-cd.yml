@@ -1,5 +1,6 @@
 name: Java CI/CD Pipeline with Railway Deployment
 
+
 on:
   push:
     branches: [main, master]
@@ -37,6 +38,7 @@ jobs:
       - name: Build with Maven
         run: mvn -B package --file pom.xml
 
+
       - name: Run tests
         run: mvn test
 
@@ -64,11 +66,14 @@ jobs:
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
         run: |
-          railway auth:whoami
-          railway up
+          echo "Checking Railway authentication..."
           railway status
 
-      - name: Output deployment URL
-        run: |
-          echo "Application deployed to:"
-          railway domain list | grep -o 'https://.*'
+          echo "Deploying to Railway..."
+          railway up
+
+          echo "Deployment status:"
+          railway status
+
+          echo "Application URL:"
+          railway domain list | grep -o 'https://.*' || echo "URL not available"
