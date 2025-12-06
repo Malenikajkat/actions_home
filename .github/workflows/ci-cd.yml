@@ -65,7 +65,7 @@ jobs:
 
       - name: Deploy to Railway
         run: |
-          # Передаем токен через переменную окружения в каждую команду
+
           RAILWAY_TOKEN=${{ secrets.RAILWAY_TOKEN }} \
             railway status \
             && railway up \
